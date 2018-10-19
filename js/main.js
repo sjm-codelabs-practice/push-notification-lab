@@ -68,10 +68,26 @@ const app = (() => {
   }
 
   function initializeUI() {
+    pushButton.addEventListener('click', () => {
+      pushButton.disabled = true;
+      if (isSubscribed) {
+        unsubscribeUser();
+      } else {
+        subscribeUser();
+      }
+    });
 
-    // TODO 3.3b - add a click event listener to the "Enable Push" button
-    // and get the subscription object
-
+    swRegistration.pushManager.getSubscription()
+      .then(subscription => {
+        isSubscribed = (subscription !== null);
+        updateSubscriptionOnServer(subscription);
+        if (isSubscribed) {
+          console.log('User IS subscribed.');
+        } else {
+          console.log('User is NOT subscribed.');
+        }
+        updateBtn();
+      });
   }
 
   // TODO 4.2a - add VAPID public key
@@ -150,7 +166,7 @@ const app = (() => {
 
         swRegistration = swReg;
 
-        // TODO 3.3a - call the initializeUI() function
+        initializeUI();
       })
       .catch(err => {
         console.error('Service Worker Error', err);
